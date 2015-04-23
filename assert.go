@@ -11,6 +11,8 @@ import (
 	"testing"
 )
 
+// Fataler represents an interface to trigger Fatal if an assertion does
+// not hold.
 type Fataler interface {
 	Fatal(args ...interface{})
 }
@@ -36,36 +38,42 @@ func fatal(f Fataler, skip int, message string, args ...interface{}) {
 	f.Fatal(buf.String())
 }
 
+// True asserts that the given condition is fulfilled.
 func True(f Fataler, condition bool) {
 	if !condition {
 		fatal(f, 1, "expected true, got false")
 	}
 }
 
+// False asserts that the given condition is not fulfilled.
 func False(f Fataler, condition bool) {
 	if condition {
 		fatal(f, 1, "expected false, got true")
 	}
 }
 
+// Nil asserts that the given value is nil.
 func Nil(f Fataler, value interface{}) {
 	if !isNil(value) {
 		fatal(f, 1, "expected nil, got %+v", value)
 	}
 }
 
+// NotNil asserts that the given value is not nil.
 func NotNil(f Fataler, value interface{}) {
 	if isNil(value) {
 		fatal(f, 1, "expected a value, got nil")
 	}
 }
 
+// Err asserts that the actual error equals the expected error.
 func Err(f Fataler, actual, expected error) {
 	if actual != expected {
 		fatal(f, 1, "unexpected error\nexpected: %v\ngot: %v", expected, actual)
 	}
 }
 
+// ErrMsg asserts that the message of the given error equals the given message.
 func ErrMsg(f Fataler, err error, msg string) {
 	if err == nil || err.Error() != msg {
 		actual := ""
@@ -76,6 +84,8 @@ func ErrMsg(f Fataler, err error, msg string) {
 	}
 }
 
+// ErrMsgMatch asserts that the message of the given error matches the given
+// regular expression.
 func ErrMsgMatch(f Fataler, err error, msgRegexp string) {
 	matches := false
 	actual := ""
@@ -90,12 +100,16 @@ func ErrMsgMatch(f Fataler, err error, msgRegexp string) {
 	}
 }
 
+// Equal asserts that the actual value equals the expected value. This function
+// also compares the elements of arrays, slices, maps, and struct fields.
 func Equal(f Fataler, actual, expected interface{}) {
 	if !reflect.DeepEqual(actual, expected) {
 		fatal(f, 1, "unexpected value\n expected: %+v\ngot: %+v", expected, actual)
 	}
 }
 
+// NotEqual asserts that the actual value is not equal to the expected valued.
+// This functions also compares the elements of arrays, slices, maps, and struct fields.
 func NotEqual(f Fataler, actual, expected interface{}) {
 	if reflect.DeepEqual(actual, expected) {
 		fatal(f, 1, "unexpected different values, got the same")

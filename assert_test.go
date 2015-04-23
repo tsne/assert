@@ -161,14 +161,14 @@ func TestErr(t *testing.T) {
 
 	Err(f, nonerr, nil)
 	if f.fataled() {
-		t.Fatal("[Error] unexpected error: %s", f.message)
+		t.Fatalf("[Error] unexpected error: %s", f.message)
 	}
 
 	f.reset()
 
 	Err(f, err1, err1)
 	if f.fataled() {
-		t.Fatal("[Error] unexpected error: %s", f.message)
+		t.Fatalf("[Error] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -193,7 +193,7 @@ func TestErrMsg(t *testing.T) {
 
 	ErrMsg(f, err, err.Error())
 	if f.fataled() {
-		t.Fatal("[ErrorMsg] unexpected error: %s", f.message)
+		t.Fatalf("[ErrorMsg] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -217,7 +217,7 @@ func TestMsgMatch(t *testing.T) {
 	err := errors.New("an error message with a 74 in it")
 	ErrMsgMatch(f, err, `an error message with a \d{2} in it`)
 	if f.fataled() {
-		t.Fatal("[ErrorMsgMatch] unexpected error: %s", f.message)
+		t.Fatalf("[ErrorMsgMatch] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -241,7 +241,7 @@ func TestEqual(t *testing.T) {
 	i := 7
 	Equal(f, i, 7)
 	if f.fataled() {
-		t.Fatal("[Equal] unexpected error: %s", f.message)
+		t.Fatalf("[Equal] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -256,7 +256,7 @@ func TestEqual(t *testing.T) {
 	d := 1.5
 	Equal(f, d, 1.5)
 	if f.fataled() {
-		t.Fatal("[Equal] unexpected error: %s", f.message)
+		t.Fatalf("[Equal] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -278,7 +278,7 @@ func TestEqual(t *testing.T) {
 
 	Equal(f, p, p)
 	if f.fataled() {
-		t.Fatal("[Equal] unexpected error: %s", f.message)
+		t.Fatalf("[Equal] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -305,7 +305,7 @@ func TestEqual(t *testing.T) {
 		"seven",
 	})
 	if f.fataled() {
-		t.Fatal("[Equal] unexpected error: %s", f.message)
+		t.Fatalf("[Equal] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -328,7 +328,7 @@ func TestNotEqual(t *testing.T) {
 	i := 7
 	NotEqual(f, i, 13)
 	if f.fataled() {
-		t.Fatal("[NotEqual] unexpected error: %s", f.message)
+		t.Fatalf("[NotEqual] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -343,7 +343,7 @@ func TestNotEqual(t *testing.T) {
 	d := 1.5
 	NotEqual(f, d, i)
 	if f.fataled() {
-		t.Fatal("[NotEqual] unexpected error: %s", f.message)
+		t.Fatalf("[NotEqual] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -365,7 +365,7 @@ func TestNotEqual(t *testing.T) {
 
 	NotEqual(f, p, nil)
 	if f.fataled() {
-		t.Fatal("[NotEqual] unexpected error: %s", f.message)
+		t.Fatalf("[NotEqual] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -379,7 +379,7 @@ func TestNotEqual(t *testing.T) {
 	}
 	NotEqual(f, s, p)
 	if f.fataled() {
-		t.Fatal("[NotEqual] unexpected error: %s", f.message)
+		t.Fatalf("[NotEqual] unexpected error: %s", f.message)
 	}
 
 	f.reset()
@@ -392,7 +392,7 @@ func TestNotEqual(t *testing.T) {
 		"Seven",
 	})
 	if f.fataled() {
-		t.Fatal("[NotEqual] unexpected error: %s", f.message)
+		t.Fatalf("[NotEqual] unexpected error: %s", f.message)
 	}
 
 	f.reset()
