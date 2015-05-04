@@ -408,3 +408,25 @@ func TestNotEqual(t *testing.T) {
 		t.Fatal("[NotEqual] expected error, got none")
 	}
 }
+
+func TestPanic(t *testing.T) {
+	f := &testFataler{}
+
+	panicIfNegative := func(arg int) {
+		if arg < 0 {
+			panic("negative")
+		}
+	}
+
+	Panic(f, panicIfNegative, 1)
+	if !f.fataled() {
+		t.Fatal("[Panic] expected error, got none")
+	}
+
+	f.reset()
+
+	Panic(f, panicIfNegative, -1)
+	if f.fataled() {
+		t.Fatalf("[Panic] unexpected error: %s", f.message)
+	}
+}

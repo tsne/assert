@@ -108,11 +108,18 @@ func Equal(f Fataler, actual, expected interface{}) {
 	}
 }
 
-// NotEqual asserts that the actual value is not equal to the expected valued.
+// NotEqual asserts that the actual value is not equal to the expected value.
 // This functions also compares the elements of arrays, slices, maps, and struct fields.
 func NotEqual(f Fataler, actual, expected interface{}) {
 	if reflect.DeepEqual(actual, expected) {
 		fatal(f, 1, "unexpected different values, got the same")
+	}
+}
+
+// Panic asserts that the function fn called with the arguments args panics.
+func Panic(f Fataler, fn interface{}, args ...interface{}) {
+	if panicked, _ := recoverPanic(f, fn, args...); !panicked {
+		fatal(f, 1, "expected a panic, got none")
 	}
 }
 
@@ -130,4 +137,31 @@ func isNil(v interface{}) bool {
 	default:
 		return false
 	}
+}
+
+func recoverPanic(f Fataler, fn interface{}, args ...interface{}) (bool, string) {
+	function := reflect.ValueOf(fn)
+	if function.Kind() != reflect.Func {
+		fatal(f, 2, "expected function, got %s", function.Kind())
+	}
+
+	arguments := make([]reflect.Value, 0, len(args))
+	for _, a := range args {
+		arguments = append(arguments, reflect.ValueOf(a))
+	}
+
+	var (
+		panicked bool
+		message  string
+	)
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				panicked = true
+				message = fmt.Sprintf("%v", r)
+			}
+		}()
+		function.Call(arguments)
+	}()
+	return panicked, message
 }
