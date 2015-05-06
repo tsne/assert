@@ -123,6 +123,20 @@ func Panic(f Fataler, fn interface{}, args ...interface{}) {
 	}
 }
 
+// Len asserts that the length of an array, a channel, a map, a slice, or a string equals
+// the expected length. It panics if another type is passed.
+func Len(f Fataler, value interface{}, expectedLen int) {
+	v := reflect.ValueOf(value)
+	switch v.Kind() {
+	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice, reflect.String:
+		if v.Len() != expectedLen {
+			fatal(f, 1, "expected length %d, got %d", expectedLen, v.Len())
+		}
+	default:
+		panic(fmt.Sprintf("expected array/chan/map/slice/string for length detection, got %s", v.Kind()))
+	}
+}
+
 func isNil(v interface{}) bool {
 	if v == nil {
 		return true
@@ -142,7 +156,7 @@ func isNil(v interface{}) bool {
 func recoverPanic(f Fataler, fn interface{}, args ...interface{}) (bool, string) {
 	function := reflect.ValueOf(fn)
 	if function.Kind() != reflect.Func {
-		fatal(f, 2, "expected function, got %s", function.Kind())
+		panic(fmt.Sprintf("expected function for panic detection, got %s", function.Kind()))
 	}
 
 	arguments := make([]reflect.Value, 0, len(args))

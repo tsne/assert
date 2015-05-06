@@ -429,4 +429,128 @@ func TestPanic(t *testing.T) {
 	if f.fataled() {
 		t.Fatalf("[Panic] unexpected error: %s", f.message)
 	}
+
+	panicked := false
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				panicked = true
+			}
+		}()
+		Panic(f, 0, 0)
+	}()
+	if !panicked {
+		t.Fatal("[Panic] no panic while passing non-function value")
+	}
+}
+
+func TestLen(t *testing.T) {
+	f := &testFataler{}
+
+	// array
+	var arr [3]int
+	Len(f, arr, 3)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	Len(f, arr, 2)
+	if !f.fataled() {
+		t.Fatal("[Len] expected error, got none")
+	}
+
+	f.reset()
+
+	// channel
+	ch := make(chan bool, 3)
+	Len(f, ch, 0)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	ch <- true
+	ch <- false
+	Len(f, ch, 0)
+	if !f.fataled() {
+		t.Fatal("[Len] expected error, got none")
+	}
+
+	f.reset()
+
+	Len(f, ch, 2)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	// map
+	var m map[string]int
+	Len(f, m, 0)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	m = map[string]int{
+		"one": 1,
+		"two": 2,
+	}
+	Len(f, m, 2)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	// slice
+	var s []float64
+	Len(f, s, 0)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	s = []float64{0, 1}
+	Len(f, s, 2)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	// string
+	var str string
+	Len(f, str, 0)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	f.reset()
+
+	str = "foobar"
+	Len(f, str, 6)
+	if f.fataled() {
+		t.Fatalf("[Len] unexpected error: %s", f.message)
+	}
+
+	// invalid value
+	panicked := false
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				panicked = true
+			}
+		}()
+		Len(f, 0, 0)
+	}()
+	if !panicked {
+		t.Fatal("[Len] no panic while passing non-function value")
+	}
 }
